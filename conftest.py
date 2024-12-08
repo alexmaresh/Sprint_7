@@ -1,8 +1,8 @@
 import json
 
 import pytest
-from courier import Courier
-from order import Order
+from utils.courier import Courier
+from utils.order import Order
 
 
 @pytest.fixture()
