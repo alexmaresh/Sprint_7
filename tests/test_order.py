@@ -1,5 +1,6 @@
 import requests
 from routes import ScooterRoutes as r
+from utils.errors_cons import ErrorMessages as em
 import pytest
 import allure
 
@@ -37,7 +38,7 @@ class TestOrderAccepted:
         resp = requests.put(url)
         assert (
             resp.status_code == 400
-            and resp.json().get("message") == "Недостаточно данных для поиска"
+            and resp.json().get("message") == em.not_enough_data
         ), resp.json()
 
     @allure.title("Неуспешное принятие заказа без id заказа")
@@ -46,7 +47,7 @@ class TestOrderAccepted:
         resp = requests.put(url)
         assert (
             resp.status_code == 400
-            and resp.json().get("message") == "Недостаточно данных для поиска"
+            and resp.json().get("message") == em.not_enough_data
         ), resp.json()
 
     @allure.title("Неуспешное принятие заказа с некорректным номером заказа")
@@ -55,7 +56,7 @@ class TestOrderAccepted:
         resp = requests.put(url)
         assert (
             resp.status_code == 404
-            and resp.json().get("message") == "Заказа с таким id не существует"
+            and resp.json().get("message") == em.order_id_doesnt_exist
         ), resp.json()
 
     @allure.title("Неуспешное принятие заказа с некорректным номером курьера")
@@ -64,7 +65,7 @@ class TestOrderAccepted:
         resp = requests.put(url)
         assert (
             resp.status_code == 404
-            and resp.json().get("message") == "Курьера с таким id не существует"
+            and resp.json().get("message") == em.courier_id_doesnt_exist
         ), resp.json()
 
 
@@ -81,7 +82,7 @@ class TestOrderGet:
         resp = requests.get(r.TRACK)
         assert (
             resp.status_code == 400
-            and resp.json().get("message") == "Недостаточно данных для поиска"
+            and resp.json().get("message") == em.not_enough_data
         ), resp.json()
 
     @allure.title("Неуспешное получение инфы о заказе по некорректному трек-номеру")
@@ -89,5 +90,5 @@ class TestOrderGet:
         params = {"t": 0}
         resp = requests.get(r.TRACK, params=params)
         assert (
-            resp.status_code == 404 and resp.json().get("message") == "Заказ не найден"
+            resp.status_code == 404 and resp.json().get("message") == em.order_not_found
         ), resp.json()

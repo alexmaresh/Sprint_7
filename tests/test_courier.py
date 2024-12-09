@@ -1,6 +1,7 @@
 import requests
 
 from routes import ScooterRoutes as r
+from utils.errors_cons import ErrorMessages as em
 import pytest
 import allure
 
@@ -21,7 +22,7 @@ class TestCourierCreate:
         assert (
             resp.status_code == 409
             and resp.json().get("message")
-            == "Этот логин уже используется. Попробуйте другой."
+            == em.login_already_exists
         ), resp.json()
 
     @allure.title("Неуспешное создание курьера с пустым логином и паролем")
@@ -32,7 +33,7 @@ class TestCourierCreate:
         assert (
             resp.status_code == 400
             and resp.json().get("message")
-            == "Недостаточно данных для создания учетной записи"
+            == em.not_enough_data_account
         ), resp.json()
 
 
@@ -51,7 +52,7 @@ class TestCourierLogin:
         resp = requests.post(r.LOGIN, data=courier_data)
         assert (
             resp.status_code == 404
-            and resp.json().get("message") == "Учетная запись не найдена"
+            and resp.json().get("message") == em.account_not_found
         )
 
     @allure.title("Неуспешный логин курьера без логина или пароля")
@@ -62,7 +63,7 @@ class TestCourierLogin:
         resp = requests.post(r.LOGIN, data=courier_data)
         assert (
             resp.status_code == 400
-            and resp.json().get("message") == "Недостаточно данных для входа"
+            and resp.json().get("message") == em.not_enough_data_login
         )
 
 
@@ -78,7 +79,7 @@ class TestCourierDelete:
         resp = requests.delete(r.COURIER + "/0")
         assert (
             resp.status_code == 404
-            and resp.json().get("message") == "Курьера с таким id нет."
+            and resp.json().get("message") == em.courier_id_not_found
         )
 
     # Ожидаем тут 400, получаем 500 - песочница не обрабатывает или тут задумано что-то другое в условии?
@@ -88,5 +89,5 @@ class TestCourierDelete:
         resp = requests.delete(r.COURIER + f"{empty_id}")
         assert (
             resp.status_code == 400
-            and resp.json().get("message") == "Недостаточно данных для удаления курьера"
+            and resp.json().get("message") == em.not_enough_data_delete
         )
